@@ -1,0 +1,37 @@
+# Render.com Configuration for AI Caseworker Backend
+# Imagine Cup 2026 Project
+
+services:
+  - type: web
+    name: ai-caseworker-backend
+    env: python
+    region: oregon  # Choose region closest to your users
+    plan: starter   # Free tier for demo/hackathon
+    
+    # Build configuration
+    buildCommand: |
+      cd backend && 
+      pip install --upgrade pip && 
+      pip install -r requirements.txt
+    
+    # Start command
+    startCommand: |
+      cd backend && 
+      gunicorn main:app -w 2 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --timeout 120
+    
+    # Environment variables (set these in Render dashboard)
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: AZURE_OPENAI_ENDPOINT
+        sync: false  # Set manually in Render dashboard
+      - key: AZURE_OPENAI_API_KEY
+        sync: false  # Set manually in Render dashboard  
+      - key: AZURE_OPENAI_DEPLOYMENT_NAME
+        value: "gpt-4"
+    
+    # Health check
+    healthCheckPath: /health
+    
+    # Auto-deploy from main branch
+    autoDeploy: true

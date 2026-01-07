@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Caseworker Dashboard - Welfare Case Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-approve {
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .cases-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .case-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .case-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .case-id {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .risk-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .risk-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .risk-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .risk-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .risk-score {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .case-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 5px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .explanation {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-controls select {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        // API URL Configuration - Supports Vercel environment variables
+        // Priority: window.API_BASE_URL > Vercel env var > default
+        window.API_BASE_URL = window.API_BASE_URL || 
+                              (typeof process !== 'undefined' && process.env?.VITE_API_URL) ||
+                              'https://your-backend.azurewebsites.net';
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Caseworker Dashboard</h1>
+            <p>Welfare Case Risk Analysis & Human-in-the-Loop Approval System</p>
+        </div>
+
+        <div class="controls">
+            <h2 style="margin-bottom: 20px; color: #333;">Analyze New Case</h2>
+            <form id="analyzeForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Citizen ID</label>
+                        <input type="text" id="citizenId" required placeholder="CIT_000001">
+                    </div>
+                    <div class="form-group">
+                        <label>Income (₹)</label>
+                        <input type="number" id="income" required placeholder="15000" min="0" step="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Document Update (months)</label>
+                        <input type="number" id="lastUpdate" required placeholder="6" min="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Scheme Type</label>
+                        <select id="schemeType" required>
+                            <option value="">Select...</option>
+                            <option value="pension">Pension</option>
+                            <option value="subsidy">Subsidy</option>
+                            <option value="ration">Ration</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Past Benefit Interruptions</label>
+                        <input type="number" id="interruptions" required placeholder="0" min="0" max="10">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Analyze Case</button>
+            </form>
+        </div>
+
+        <div id="messageArea"></div>
+
+        <div class="controls">
+            <h2 style="margin-bottom: 15px; color: #333;">Filter Cases</h2>
+            <div class="filter-controls">
+                <select id="statusFilter">
+                    <option value="">All Statuses</option>
+                    <option value="PENDING_APPROVAL">Pending Approval</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="REJECTED">Rejected</option>
+                </select>
+                <select id="riskFilter">
+                    <option value="">All Risk Levels</option>
+                    <option value="low">Low Risk</option>
+                    <option value="medium">Medium Risk</option>
+                    <option value="high">High Risk</option>
+                </select>
+                <button class="btn btn-primary" onclick="loadCases()">Refresh Cases</button>
+            </div>
+        </div>
+
+        <div id="casesContainer" class="cases-container">
+            <div class="loading">Loading cases...</div>
+        </div>
+    </div>
+
+    <script>
+        // Get API URL from window config (set by script in head)
+        const API_BASE_URL = window.API_BASE_URL || 'https://your-backend.azurewebsites.net';
+
+        // Handle form submission
+        document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const caseData = {
+                case: {
+                    citizen_id: document.getElementById('citizenId').value,
+                    income: parseFloat(document.getElementById('income').value),
+                    last_document_update_months: parseFloat(document.getElementById('lastUpdate').value),
+                    scheme_type: document.getElementById('schemeType').value,
+                    past_benefit_interruptions: parseInt(document.getElementById('interruptions').value)
+                }
+            };
+
+            try {
+                showMessage('Analyzing case...', 'info');
+                
+                const response = await fetch(`${API_BASE_URL}/analyze_case`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(caseData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                showMessage('Case analyzed successfully!', 'success');
+                
+                // Reset form
+                document.getElementById('analyzeForm').reset();
+                
+                // Reload cases
+                loadCases();
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+                console.error('Error:', error);
+            }
+        });
+
+        // Load cases
+        async function loadCases() {
+            try {
+                const statusFilter = document.getElementById('statusFilter').value;
+                const riskFilter = document.getElementById('riskFilter').value;
+                
+                let url = `${API_BASE_URL}/cases`;
+                const params = [];
+                if (statusFilter) params.push(`status=${statusFilter}`);
+                if (riskFilter) params.push(`risk_level=${riskFilter}`);
+                if (params.length > 0) url += '?' + params.join('&');
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to load cases');
+
+                const cases = await response.json();
+                displayCases(cases);
+            } catch (error) {
+                document.getElementById('casesContainer').innerHTML = 
+                    `<div class="error">Error loading cases: ${error.message}</div>`;
+            }
+        }
+
+        // Display cases
+        function displayCases(cases) {
+            const container = document.getElementById('casesContainer');
+            
+            if (cases.length === 0) {
+                container.innerHTML = '<div class="loading">No cases found</div>';
+                return;
+            }
+
+            // NOTE: We avoid using the reserved word "case" as a variable name
+            container.innerHTML = cases.map(c => `
+                <div class="case-card">
+                    <div class="case-header">
+                        <div>
+                            <div class="case-id">${c.case_id}</div>
+                            <div style="font-size: 14px; color: #666; margin-top: 5px;">
+                                Citizen: ${c.citizen_id}
+                            </div>
+                        </div>
+                        <div>
+                            <span class="risk-badge risk-${c.risk_level}">${c.risk_level.toUpperCase()} RISK</span>
+                            <div style="margin-top: 10px;">
+                                <span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-score" style="color: ${getRiskColor(c.risk_score)}">
+                        Risk Score: ${c.risk_score.toFixed(1)} / 100
+                    </div>
+
+                    <div class="case-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Income</div>
+                            <div class="detail-value">₹${c.model_reasons.income.value.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Last Update</div>
+                            <div class="detail-value">${c.model_reasons.last_document_update_months.value.toFixed(1)} months</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Scheme Type</div>
+                            <div class="detail-value">${c.model_reasons.scheme_type_encoded.value === 0 ? 'Pension' : 
+                                c.model_reasons.scheme_type_encoded.value === 1 ? 'Subsidy' : 'Ration'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Interruptions</div>
+                            <div class="detail-value">${c.model_reasons.past_benefit_interruptions.value}</div>
+                        </div>
+                    </div>
+
+                    <div class="explanation">
+                        <strong>AI Explanation:</strong><br>
+                        ${c.explanation}
+                    </div>
+
+                    <div style="margin-bottom: 10px;">
+                        <strong>Recommended Action:</strong> ${c.action_description}
+                    </div>
+
+                    ${c.status === 'PENDING_APPROVAL' ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-approve" onclick="approveCase('${c.case_id}', 'APPROVE')">
+                                ✓ Approve
+                            </button>
+                            <button class="btn btn-reject" onclick="approveCase('${c.case_id}', 'REJECT')">
+                                ✗ Reject
+                            </button>
+                        </div>
+                    ` : `
+                        <div style="color: #666; font-size: 14px;">
+                            Case ${c.status.toLowerCase()} by officer
+                        </div>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        // Approve/Reject case
+        async function approveCase(caseId, decision) {
+            const officerId = prompt('Enter your Officer ID:');
+            if (!officerId) return;
+
+            const notes = prompt('Enter notes (optional):') || null;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/approve_case`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        case_id: caseId,
+                        officer_id: officerId,
+                        decision: decision,
+                        officer_notes: notes
+                    })
+                });
+
+                if (!response.ok) throw new Error('Failed to process approval');
+
+                const result = await response.json();
+                showMessage(`Case ${decision.toLowerCase()}d successfully!`, 'success');
+                loadCases();
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Get risk color
+        function getRiskColor(score) {
+            if (score < 30) return '#10b981';
+            if (score < 60) return '#f59e0b';
+            return '#ef4444';
+        }
+
+        // Show message
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'loading';
+            messageArea.innerHTML = `<div class="${className}">${message}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+
+        // Load cases on page load
+        loadCases();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadCases, 30000);
+    </script>
+</body>
+</html>
+
+

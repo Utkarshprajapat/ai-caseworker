@@ -1,0 +1,32 @@
+# AI Caseworker for Government Welfare Leakage
+# Requirements for Microsoft Azure AI Prototype
+
+# Core dependencies
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# Web framework (Azure App Service / Functions equivalent)
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+
+# Model persistence
+joblib>=1.3.0
+
+# Optional: For Azure OpenAI Service (when available)
+# azure-openai>=1.0.0
+# azure-identity>=1.15.0
+# azure-keyvault-secrets>=4.7.0
+
+# Optional: For Azure storage (when available)
+# azure-storage-blob>=12.19.0
+# azure-sql-connector>=0.1.0
+
+# Development (optional)
+# pytest>=7.4.0
+# black>=23.0.0
+
+
+
+
